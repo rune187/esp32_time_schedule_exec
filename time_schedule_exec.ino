@@ -1,13 +1,12 @@
 // wifiに接続して1秒ごとに年月日曜日、時間を取得し定時に処理を実行
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
 #include <time.h>
 #include <Adafruit_NeoPixel.h>
 
 #define JST 3600 * 9
 const int led = 2;
-const char* ssid = "187Hideout-2G";
-const char* password = "1prrm6ened0xyt";
+const char* ssid = "ssid";
+const char* password = "pass";
 
 Adafruit_NeoPixel pixels(1, led, NEO_GRB + NEO_KHZ800);
 WiFiClientSecure secureClient;
@@ -15,7 +14,6 @@ WiFiClientSecure secureClient;
 void setup() {
   Serial.begin(115200);
   pixels.begin();
-  secureClient.setInsecure();
   delay(100);
 
   WiFi.begin(ssid, password);
@@ -37,29 +35,8 @@ void setup() {
   delay(5000);
 }
 
-int lineSend(String message, int SI = 0, int PSI = 0) {
-  const char* host = "notify-api.line.me";
-  const char* token = "7V7Px0bfjGo4M6PpcbJfiZrvrUIkO8n9OFbY6YqoAC5";  //line notify token
-
-  Serial.println("Try");
-  if (!secureClient.connect(host, 443)) {
-    Serial.println("Connection failed");
-    return (0);
-  }
-  Serial.println("Connected");
-  String query = "message=" + message;
-  if (SI > 0) {
-    query = query + "&stickerId=" + SI + "&stickerPackageId=" + PSI;
-  }
-
-  Serial.println(query);
-  String request =
-    String("") + "POST /api/notify HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Authorization: Bearer " + token + "\r\n" + "Content-Length: " + String(query.length()) + "\r\n" + "Content-Type: application/x-www-form-urlencoded\r\n\r\n" + query + "\r\n";
-  secureClient.print(request);
-  String res = secureClient.readString();
-  Serial.println(res);
-  secureClient.stop();
-  return (1);
+void any_func() {
+  Serial.println("exec");
 }
 
 void loop() {
@@ -79,7 +56,7 @@ void loop() {
 
   if (tm->tm_min == 0) {    // set target minute
     if (tm->tm_sec == 0) {  // set target second
-      lineSend("exec");
+      any_func();
     }
   }
 
